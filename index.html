@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="index.css" type="text/css">
+
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap" rel="stylesheet">
+
+    <title>DHS One</title>
+  </head>
+  <body>
+    
+    <div class="container text-justify main-container">
+
+        <center>
+            <h1>
+                <b>Encrypted data transfer platform with QR code and Secure Shell based key-exchange mechanism</b>
+            </h1>
+            <h4>
+                (Patent no: 201911804534)
+            </h4><br>
+            <h3>
+                Daniel Mark, Harrison Mathew, Sajwa Furood,<br>Loyola-ICAM College of Engineering and Technology
+            </h3><br>
+        </center>
+        
+
+        <p>
+            <b>Abstract</b> -- As more and more people have started using instant messaging apps on a daily basis to not just text, but send and receive files and other types of data, the need for a good security protocol that offers an encryption standard and method of key-exchange has radically increased. With the advent of end-to-end encryption (E2EE), apps such as WhatsApp and Signal have implemented their own version of E2EE. However, none of these protocols are 100% safe and don’t guarantee 100% security against man-in-the-middle attacks. These protocols merely make it time-consuming and resource intensive to find a solution to crack these keys using a brute-force approach. Algorithms like RSA and SHA512 are only about a decade or so away from being broken. We present a solution to the public-key exchange challenges faced by cryptographers by implementing the initial key-exchange process using QR codes and subsequent key-exchanges using the already established shared secret keys. We have also implemented a key-exchange mechanism using Secure Shell tunneling as a fallback option if the above methods fail and the two parties are unable to physically meet and re-exchange keys.<br><br>Index Terms — cryptography, network security, QR code, secure data transfer.
+        </p>
+
+        <br><br><br>
+        
+        <p>
+            <h3>
+                <b>
+                    I.	INTRODUCTION
+                </b>
+            </h3><br>
+            Over two billion people use Facebook, Instagram, WhatsApp, or Messenger every day, and over 2.7 billion use at least one of Facebook’s products each month.<sup>[1]</sup> This is no surprise given the amount of internet penetration in almost every part of the world. With the increase in the number of users, the amount of data generated is also growing exponentially. 682 million tweets are created per day, 67,305,600 Instagram posts are made every day, 4.3 billion messages are sent on Facebook each day and 5.76 billion Facebook likes are generated every single day. Companies that provide these services have to stay in business and manage to cover their operational costs while offering their products as a free service. This is where data brokers and advertising comes in. Targeted ads have become very popular and almost every internet company is moving towards serving targeted advertisements. In 2017, Google AdWords alone made over $110.8 billion in revenue.<sup>[2]</sup> All this money is being generated through the vast amounts of user data being collected by these online services. Targeted advertising has had a profound impact on the way companies have started to make money, so much so that most of them don’t take enough precautions to safeguard user data and privacy. This has led to a number of smaller startups trying to build apps and services that aim to put privacy first by implementing some sort of public key encryption protocol.
+        </p>
+        
+        <p>
+            One of the most notable forms of digital encryption is the Diffie-Hellman key exchange. All other modern encryption algorithms are either directly or loosely based on the work of Whitfield Diffie and Martin Hellman.<sup>[3]</sup> Even though this encryption scheme allows two parties who have no prior knowledge of each other to jointly establish a shared secret key over an insecure channel, this can be broken using a brute-force approach since the two parties agree on certain common variables before the keys are privately generated and anyone in the middle listening to both sides of the communication can easily intercept these variables and compute the decrypted values.
+        </p>
+        
+        <p>
+            This problem is solved using the RSA algorithm wherein each key is signed with a digital signature to verify its integrity and make sure only the two communicating parties can decrypt it with their private key pairs. This method is secure and hasn’t been broken yet as long as a large key is used but is slow and is generally used to pass encrypted shared keys for symmetric key cryptography which can in turn perform bulk encryption-decryption operations at a much higher speed.
+        </p><br><br>
+        
+
+        <h3>
+            <b>II.	ENCRYPTION ALGORITHM AND KEY GENERATION</b>
+        </h3><br>
+        <h4>
+            <b>A. Algorithm</b>
+        </h4><br>
+        <p>
+            Our algorithm, just like any other encryption algorithm makes use of trapdoor functions from modular arithmetic. A trapdoor function is a special type of function that can be performed on any variable to give us an answer that can’t be reversed easily unless we know the trapdoor. The trapdoor here refers to the secret variable that makes reverse computation of the trapdoor function infeasible. These trapdoor functions are otherwise known as one-way functions.
+        </p>
+
+        <p>
+            We use 3 variables ‘x’, ‘m’ and ‘p’ to compute our key values – e.
+        </p>
+        <br>
+
+        <div class="left-padding">
+            <div class="formula">
+                m<sup>x</sup> mod p = e
+            </div>
+        </div>
+
+        <br><br>
+
+        <table cellpadding="10px">
+            <tr>
+                <td>
+                    p
+                </td>
+                <td>
+                    =
+                </td>
+                <td>
+                    any large prime number
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    m
+                </td>
+                <td>
+                    =
+                </td>
+                <td>
+                    primitive root modulo of p
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    x
+                </td>
+                <td>
+                    =
+                </td>
+                <td>
+                    values to be encrypted
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    e
+                </td>
+                <td>
+                    =
+                </td>
+                <td>
+                    encrypted value
+                </td>
+            </tr>
+        </table><br><br>
+
+        <h4>
+            <b>B. Computation</b>
+        </h4><br>
+
+        <p>
+            Our key consists of 10 values starting from 0 to 9. These values are assigned to ‘x’ one at a time over a series of 10 iterations. Each iteration produces a unique value ‘e’ for every ‘x’.
+        </p>
+        
+        <p>
+            The strength of this algorithm depends on the size of the variables being used here. Our model - ‘DHS One’ makes use of variables that are 2048 bits in size.
+        </p>
+
+        <p>
+            Given x = 0, 1, 2, 3... 9; our cipher will consist of 10 distinct key values where each value is mapped to an individual ‘x’ value.
+        </p><br><br>
+
+        <h4>
+            <b>C. Primitive Root Modulus</b>
+        </h4><br>
+
+        <p>
+            In order for the cipher table to consist of unique values, we make use of what’s known as the primitive root modulo of the prime number ‘p.’ The primitive root modulo is simply the smallest value greater than 1 that when substituted in the formula will give us unique values for each ‘x’ value.
+        </p>
+
+        <p>
+            If the value of the large prime is smaller than 9, then the values of the cipher table will start repeating before we complete the table. This is because all the values in the table are generated by the primitive root modulo ‘m’ which is otherwise known as the generator of the group.
+        </p> 
+        <br><br>
+            
+        <h4>
+            <b>D. Cracking the key</b>
+        </h4><br>
+        
+        <p>
+            Our key is made up of variables that are 2048 bits each. Cracking a key of this size would require factoring a 617 digit number. Cracking a key using the brute-force approach is certainly infeasible. Therefore we use something known as Number Field Sieve (NFS). RSA Labs claim that 2048-bit keys are 2^32 (2 to the power of 32) times harder to break using NFS, than 1024-bit keys.
+        </p>
+        
+        <p>
+            2^32 = 4,294,967,296 or almost 4.3 billion.
+        </p>
+        
+        <p>
+            Therefore, if we use a standard desktop to try and crack this key, it’d take approximately 4,294,967,296 x 1.5 million years to crack it. That’s almost 6.4 quadrillion years. With real life implementations of DHS One, ciphers will be changed once every 12 hours at least. Each device will also have access to at least 3 different ciphers per connection for exchange of data and use these in a round-robin fashion to ensure that each subsequent data fragment is encrypted using a different cipher, so hackers who might gain access to one key will not be able to decrypt the entire packet being sent over a TCP connection.
+        </p><br><br>
+            
+        <h4>
+            <b>E. Implementation of the formula</b>
+        </h4><br>
+
+        <p>
+            Given below is a sample implementation of the encryption algorithm in Java.
+        </p><br>
+        
+        <p class="left-padding code">
+            import java.lang.Math;<br><br>
+
+            public class Main {<br>
+                public static void main(String[] args) {<br>
+                //declaring of variables<br>
+                int x;<br>
+                double m, p, keyValue, power;<br>
+        
+                //initialization of variables<br>
+                p = 781;<br>
+                m = 6;<br>
+                x = 0;<br>
+                keyValue = 0;<br>
+                power = 0;<br><br>
+                        
+                System.out.println("X   Key");<br><br>
+                        
+                for(x = 0; x < 10; x++) {<br>
+                    power = Math.pow(x, m);<br>
+                    keyValue = power % p;<br>
+                    System.out.println(x+"  "+keyValue);<br>
+                }<br>
+                }<br>
+            }<br>
+        </p><br><br>
+        
+        <p>
+            Running this code will give us an output that looks like this:
+        </p>
+
+        <div class="left-padding">
+                <table cellpadding="10px">
+                        <tr>
+                            <td>X</td>
+                            <td>Key</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>64</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>729</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>191</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>577</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>499</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>509</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>361</td>
+                        </tr>
+                    </table>
+        </div><br><br>
+        
+        <h4>
+            <b>F. Sample Encrypted Message</b>
+        </h4><br>
+
+        <p>
+            We shall encrypt the string “hello world” using the above cipher. Directly converting the string to cipher text will make it weak and increase the risk of a hack since the values for 0 and 1 are the same even after the one-way function has been applied on it.  This is where we introduce a proprietary hashing function (that can’t be published here due to copyright infringement reasons) called DHS-Hash which will convert the plaintext to a hashed value that can be reversed given the two communicating parties have access to the same method of implementation of this hash. This hash is then converted to cipher text. The cipher text for the aforementioned string is given below. 
+        </p><br>
+
+        <p class="left-padding">
+            54 97 48 103 49 97 53 48 57 103 54 52 97 53 103 54 52 103 49<br>49 49 48 48 48 49 49 49 48 48 48 49 49 49 49 103 48 103 54<br>52 103 55 50 57 103 54 52 97 53 103 49 97 52 57 57 103
+        </p><br>
+
+        <p>
+            This value can then be converted into its corresponding 8421 binary values and be sent over a network.
+        </p><br><br>
+
+        <h3>
+            <b>III. KEY EXCHANGE</b>
+        </h3>
+        <br>
+
+        <h4>
+            <b>A. QR Codes</b>
+        </h4><br>
+
+        <p>
+            ‘Quick Response Codes,’ better known as QR Codes have fast become one of the most popular methods of storing digital data in a format that can be read by smartphones. These codes usually point to a website or an application but can also be used to store data on them and used the same way barcodes are being used. The variables needed for generation of the cipher, the type of hashing function to be used and other metadata required to establish a secure end-to-end connection between two communicating clients can be converted to a QR code on one of the client’s phones while the other may scan this code using his phone. The process of scanning takes place within the app itself and only requires the camera. The only point of failure in a system like this is when an unauthorized user gains physical access to either communicating parties device. The physical safety of the device lies in the hands of the user and any liability concerning this is covered under the End User License Agreement (EULA).
+        </p>
+
+        <p>
+            QR codes are now sophisticated enough to implement error correction at different levels. The correction level we would use to generate our codes would be ‘level H’ which will allow for approximately 30% of the code to be regenerated in case it gets damaged and doesn’t render properly. This correction mechanism is implemented by adding a ‘Reed-Solomon code’ to the original data.
+        </p>
+        
+        <p>
+            A sample QR code that uses 781 as the value for the variable ‘p’ with other metadata related to the hashing function (say the data is 781, RM D2) will look like this:
+        </p><br>
+
+        <p class="left-padding">
+            <img src="qr.png" alt="QR Code" class="qrcode">
+        </p><br><br>
+
+        <h4>
+            <b>B. Secure Shell (SSH)</b>
+        </h4><br>
+
+        <p>
+            Another method of key exchange that can be implemented if the two parties are separated by a large geographical distance is the ‘Secure Shell Tunneling’ method. This setup consists of an encrypted channel through an SSH connection.
+        </p>
+        
+        <p>
+            SSH-2 hasn’t been broken by anyone including America’s National Security Agency yet. Hence, it can serve as a viable replacement when the QR code method is not feasible. In a setup like this, both parties can connect to each other over an ordinary network running over the TCP/IP protocol and establish an encrypted tunnel through which the information necessary to establish a shared secret key can be exchanged. The only plausible drawback here is the simultaneous availability of both parties in order for them to connect to each other as the whole prospect of using a traditional client/server architecture will provide an opportunity for a man-in-the-middle attack assuming the intruders may also be the providers of the service themselves. This eliminates even the service providers from controlling the data shared through their servers and provides the user with full autonomy over their data.
+        </p>
+
+        <p>
+            The issue of simultaneous availability isn’t a big concern as most users of such a service will have access to a persistent internet connection and the tunneling process can take place without the knowledge of the users themselves outside their device’s active hours.
+        </p><br><br>
+
+        <h3>
+            <b>IV. PLATFORM ARCHITECTURE</b>
+        </h3><br>
+        
+        <h4>
+            <b>1) Front-end:</b>
+        </h4>
+
+        <ul>
+            <li>
+                A data transfer platform of this sort will work best on smartphones and tablets. An app like this has to be cross-platform and feature-rich yet dead simple to use.
+            </li>
+            <li>
+                This is where React Native comes into play. Using React Native, programmers can now code the entire  front-end of the app using a single framework and then transpile that into different codebases that can be packaged into apps for different platforms.
+            </li>
+            <li>
+                React Native not only helps build native apps that make use of the native functionalities of the device but also provides the stability and speed required by these apps to give the user a smooth experience.
+            </li>
+            <li>
+                SQLite is a great option to store data on the client’s machine. This will remove the load off the server once a transaction is complete as the clients don’t have to make requests to the server for older data.
+            </li>
+        </ul><br>
+
+
+        <h4>
+            <B>2) Backend:</B>
+        </h4>
+        
+        <ul>
+            <li>
+                The backend of a system like this has to be built keeping scalability and high availability in mind.
+            </li>
+            <li>
+                Erlang would be the best option to implement the backend of a service like this. It’s built-in support for concurrency, distribution and fault tolerance makes it highly reliable.
+            </li>
+        </ul><br>
+
+        <h4>
+            <B>3) Database:</B>
+        </h4>
+
+        <ul>
+            <li>
+                Since the backend is programmed using Erlang, the Mnesia database would be perfect for an application of this sort.
+            </li>
+            <li>
+                Apart from running a Mnesia database to store messages temporarily, file servers and cache servers may also be used to store different kinds of data to avoid bottlenecks within the application’s internal architecture.
+            </li>
+        </ul><br>
+
+        <h4>
+            <b>4) Server:</b>
+        </h4>
+
+        <ul>
+            <li>
+                Ejabberd which is an open source Jabber server may be used along with the Extensible Messaging and Presence Protocol (XMPP) to deliver messages over the WAN.
+            </li>
+            <li>
+                The FreeBSD operating system which is a Unix-like operating system can be used to power the entire backend infrastructure.
+            </li>
+            <li>
+                Given its popularity, other operating systems such as FreeNAS which are based off of it can be used along with FreeBSD to manage NAS drives on the backend for long-term storage of data such as user credentials and server logs.
+            </li>
+        </ul><br>
+        
+        <h4>
+            <b>5) Internal Networking:</b>
+        </h4>
+
+        <ul>
+            <li>
+                Given the speed at which an application like this has to run at to serve several million users worldwide, a robust internal network is required.
+            </li>
+            <li>
+                Several physical servers known as CDN (Content Delivery Network) edge servers will have to be placed around the world to serve as entry points to the system so pushing data to the servers can take place seamlessly.
+            </li>
+            <li>
+                If edge servers aren’t used here, the number of hops required for a data packet to make it to the central database will increase exponentially.
+            </li>
+            <li>
+                Given that most users will send and receive data from other users who live in the same geographic location, the need to maintain a central database and serve all content from it is unnecessary and costly.
+            </li>
+            <li>
+                Instead local servers connected over a backbone network can be used to serve users in the same geographical location.
+            </li>
+            <li>
+                Edge servers may be used for connections over longer distances.
+            </li>
+            <li>
+                With several physical machines being used in a cluster, passing data between them becomes tricky. In such cases, Apache’s Hadoop can be used to store data across several physical machines and process them using MapReduce.
+            </li>
+            <li>
+                Using Apache Hadoop not only makes distributed computing easier but also makes storage easier by splitting files into large blocks and distributing them across nodes in a cluster using the Hadoop Distributed File System (HDFS).
+            </li>
+            <li>
+                Specific sets of data can also be queried from these clusters using Apache Hive.
+            </li>
+            <li>
+                Amazon’s EC2 instances can also be employed for additional load balancing as and when needed when the number of concurrent requests increases significantly during peak hours.
+            </li>
+            <li>
+                Databases spread out over a large geographical location can be synchronised using Apache Cassandra. This will make sure there is no single point of failure.
+            </li>
+        </ul><br><br>
+        
+        <h3>
+            <B>V.	CONCLUSION</B>
+        </h3><br>
+       
+        <p>
+            Network security is an ever growing concern and the need for a platform that offers good functionality as well as data autonomy to its users is ever present. With government agencies and network service providers constantly trying to pry on users and steal data, it is high time we switch to more reliable and secure platforms to exchange data over the internet. We believe that the solution we have provided will help address serious network security issues and fix at least a few gaping  holes in pre-existing data transfer systems.
+        </p><br><br>
+
+        <h3>
+            <B>REFERENCES</B>
+        </h3><br>
+        
+        <p>
+            [1]	Facebook’s second quarter 2019 results.<br>
+            <a href="https://investor.fb.com/investor-news/press-release-details/2019/Facebook-Reports-Second-Quarter-2019-Results/default.aspx">https://investor.fb.com/investor-news/press-release-details/2019/Facebook-Reports-Second-Quarter-2019-Results/default.aspx</a>
+        </p>
+
+        <p>
+            [2]	Google AdWords revenue statistics – Investopedia.<br>
+            <a href="https://www.investopedia.com/articles/investing/020515/business-google.asp">https://www.investopedia.com/articles/investing/020515/business-google.asp</a>
+        </p>
+        
+        <p>
+            [3]	Diffie-Hellman key exchange.<br>
+            <a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange</a>
+        </p>
+
+        <p>
+            [4] The math behind cracking RSA.<br>
+            <a href="https://www.digicert.com/TimeTravel/math.htm">https://www.digicert.com/TimeTravel/math.htm</a>
+        </p>
+        
+        <p>
+            [5] QR Code error correction<br>
+            <a href="https://www.qrcode.com/en/about/error_correction.html">https://www.qrcode.com/en/about/error_correction.html</a>
+        </p>
+
+        <p>
+            [6] Secure Shell Tunneling<br>
+            <a href="https://en.wikipedia.org/wiki/Secure_Shell">https://en.wikipedia.org/wiki/Secure_Shell</a>
+        </p>
+        
+        <p>
+            [7] Platform architecture - Hadoop<br>
+            <a href="https://hadoop.apache.org/">https://hadoop.apache.org/</a>
+        </p>
+
+        <p>
+            [8] Apache Cassandra<br>
+            <a href="http://cassandra.apache.org/">http://cassandra.apache.org/</a>
+        </p>
+        
+        <p>
+            [9] Apache Hive<br>
+            <a href="https://hive.apache.org/">https://hive.apache.org/</a>
+        </p>
+        
+        <br>
+        <br>
+        <br><br><br><br><br><br>
+
+
+
+
+
+
+
+
+
+
+    </div><!-- end of main container -->
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
